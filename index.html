@@ -1,4 +1,82 @@
 <!DOCTYPE html>
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>📦 Inventario</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f9; }
+    h1 { text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+    th { background: #eee; }
+    input, button { padding: 8px; margin: 5px; }
+    .form-section { margin: 20px 0; padding: 15px; background: #fff; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>📊 Inventario con Entradas y Salidas</h1>
+
+  <div class="form-section">
+    <h2>➕ Nueva Entrada / ➖ Nueva Salida</h2>
+    <label>Artículo: <input type="text" id="item"></label>
+    <label>Cantidad: <input type="number" id="qty"></label>
+    <button onclick="addStock()">➕ Entrada</button>
+    <button onclick="removeStock()">➖ Salida</button>
+  </div>
+
+  <h2>📋 Inventario Actual</h2>
+  <table id="inventoryTable">
+    <thead>
+      <tr>
+        <th>Artículo</th>
+        <th>Cantidad</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // Cargar inventario de LocalStorage
+    let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+
+    function saveInventory() {
+      localStorage.setItem("inventory", JSON.stringify(inventory));
+      renderTable();
+    }
+
+    function addStock() {
+      const item = document.getElementById("item").value.trim();
+      const qty = parseInt(document.getElementById("qty").value);
+      if (!item || isNaN(qty) || qty <= 0) return alert("Ingrese datos válidos");
+      inventory[item] = (inventory[item] || 0) + qty;
+      saveInventory();
+    }
+
+    function removeStock() {
+      const item = document.getElementById("item").value.trim();
+      const qty = parseInt(document.getElementById("qty").value);
+      if (!item || isNaN(qty) || qty <= 0) return alert("Ingrese datos válidos");
+      if (!inventory[item] || inventory[item] < qty) return alert("No hay suficiente stock");
+      inventory[item] -= qty;
+      saveInventory();
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector("#inventoryTable tbody");
+      tbody.innerHTML = "";
+      for (let [item, qty] of Object.entries(inventory)) {
+        const row = `<tr><td>${item}</td><td>${qty}</td></tr>`;
+        tbody.innerHTML += row;
+      }
+    }
+
+    // Render inicial
+    renderTable();
+  </script>
+</body>
+</html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -54,3 +132,4 @@
                 <td>SN12345</td>
                 <td>10</td>
                 <td>2025-09-01</td>
+
